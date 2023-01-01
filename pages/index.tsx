@@ -1,5 +1,7 @@
 import { Typography } from '@mui/material';
 
+import { initialData } from '../database/products';
+import { ProductList } from '../components/products';
 import { ShopLayout } from '../components/layouts';
 
 export default function Home() {
@@ -14,6 +16,8 @@ export default function Home() {
       <Typography variant="h2" sx={{ mb: 1 }}>
         Todos los productos
       </Typography>
+
+      <ProductList products={initialData.products} />
     </ShopLayout>
   );
 }
