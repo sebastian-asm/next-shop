@@ -1,0 +1,8 @@
+services:
+  nextshop:
+    image: mongo
+    container_name: nextshop-database
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb:/data/db
