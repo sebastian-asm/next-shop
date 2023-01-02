@@ -13,7 +13,7 @@ export default function Home() {
       <Typography variant="h1" component="h1">
         Next Shop
       </Typography>
-      <Typography variant="h2" sx={{ mb: 1 }}>
+      <Typography variant="h2" sx={{ mb: 4 }}>
         Todos los productos
       </Typography>
 
