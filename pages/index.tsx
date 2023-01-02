@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 
 import { initialData } from '../database/products';
 import { ProductList } from '../components/products';
