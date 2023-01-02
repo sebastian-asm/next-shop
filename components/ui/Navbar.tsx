@@ -16,7 +16,7 @@ export const Navbar = () => {
   return (
     <AppBar>
       <Toolbar>
-        <NextLink href="/" legacyBehavior>
+        <NextLink href="/" legacyBehavior passHref>
           <Link>
             <Typography variant="h6">Next Shop</Typography>
           </Link>

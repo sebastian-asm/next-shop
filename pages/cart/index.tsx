@@ -26,7 +26,7 @@ export default function CartPage() {
         <Grid item xs={12} sm={5}>
           <Card className="summary-card">
             <CardContent>
-              <Typography variant="h4">Orden</Typography>
+              <Typography variant="h5">Pedido</Typography>
               <Divider sx={{ my: 1 }} />
               <OrderSummary />
               <Box sx={{ mt: 3 }}>

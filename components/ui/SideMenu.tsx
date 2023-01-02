@@ -55,7 +55,7 @@ export const SideMenu = () => {
             <ListItemIcon>
               <ConfirmationNumberOutlined />
             </ListItemIcon>
-            <ListItemText primary={'Mis Ordenes'} />
+            <ListItemText primary={'Mis Pedidos'} />
           </ListItemButton>
 
           <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
