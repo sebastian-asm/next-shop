@@ -1,19 +1,12 @@
 import { FC, useMemo, useState } from 'react';
-
-// import {
-//   Box,
-//   Card,
-//   CardActionArea,
-//   CardMedia,
-//   Grid,
-//   Typography,
-// } from '@mui/material';
+import NextLink from 'next/link';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
+import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 import { IProduct } from '../../interfaces';
@@ -42,14 +35,19 @@ export const ProductCard: FC<Props> = ({ product }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Card>
-        <CardActionArea>
-          <CardMedia
-            component="img"
-            image={productImage}
-            alt={product.title}
-            className="fadeIn"
-          />
-        </CardActionArea>
+        {/* prefetch: evitar que next haga una pre-carga en memoria de los enlaces */}
+        <NextLink href="/product/slug" legacyBehavior prefetch={false}>
+          <Link>
+            <CardActionArea>
+              <CardMedia
+                component="img"
+                image={productImage}
+                alt={product.title}
+                className="fadeIn"
+              />
+            </CardActionArea>
+          </Link>
+        </NextLink>
       </Card>
 
       <Box sx={{ mt: 1 }} className="fadeIn">
