@@ -4,11 +4,7 @@ import { db, SHOP_CONSTANTS } from '../../../database';
 import { IProduct } from '../../../interfaces';
 import { Product } from '../../../models';
 
-type Data = {
-  ok: boolean;
-  msg: string;
-  products?: IProduct[];
-};
+type Data = { msg: string } | IProduct[];
 
 export default function handler(
   req: NextApiRequest,
@@ -20,7 +16,6 @@ export default function handler(
 
     default:
       return res.status(400).json({
-        ok: false,
         msg: 'No se puede procesar la solicitud',
       });
   }
@@ -43,11 +38,7 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       .select('-_id title images price inStock slug')
       .lean();
 
-    res.json({
-      ok: true,
-      msg: 'Listado de todos los productos',
-      products,
-    });
+    res.json(products);
   } catch (error) {
     console.log(error);
   } finally {

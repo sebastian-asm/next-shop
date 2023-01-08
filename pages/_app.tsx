@@ -1,6 +1,6 @@
 import type { AppProps } from 'next/app';
 
-// import { CssBaseline, ThemeProvider } from '@mui/material';
+import { SWRConfig } from 'swr';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -9,10 +9,18 @@ import '../styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider theme={lightTheme}>
-      <CssBaseline>
-        <Component {...pageProps} />
-      </CssBaseline>
-    </ThemeProvider>
+    <SWRConfig
+      value={{
+        // refreshInterval: 1000,
+        fetcher: (resource, init) =>
+          fetch(resource, init).then((res) => res.json()),
+      }}
+    >
+      <ThemeProvider theme={lightTheme}>
+        <CssBaseline>
+          <Component {...pageProps} />
+        </CssBaseline>
+      </ThemeProvider>
+    </SWRConfig>
   );
 }
