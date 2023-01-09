@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 
@@ -13,10 +14,13 @@ import Typography from '@mui/material/Typography';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import ShoppingCartOutlined from '@mui/icons-material/ShoppingCartOutlined';
 
+import { UiContext } from '../../context';
+
 export const Navbar = () => {
   const { asPath } = useRouter();
+  const { toggleSideMenu } = useContext(UiContext);
 
-  const selectedPath = (path: string) => (asPath === path ? 'primary' : 'info');
+  const activeLink = (href: string) => (asPath === href ? 'primary' : 'info');
 
   return (
     <AppBar>
@@ -32,17 +36,17 @@ export const Navbar = () => {
         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
           <NextLink href="/category/men" legacyBehavior>
             <Link>
-              <Button color={selectedPath('/category/men')}>Hombres</Button>
+              <Button color={activeLink('/category/men')}>Hombres</Button>
             </Link>
           </NextLink>
           <NextLink href="/category/women" legacyBehavior>
             <Link>
-              <Button color={selectedPath('/category/women')}>Mujeres</Button>
+              <Button color={activeLink('/category/women')}>Mujeres</Button>
             </Link>
           </NextLink>
           <NextLink href="/category/kid" legacyBehavior>
             <Link>
-              <Button color={selectedPath('/category/kid')}>Niños</Button>
+              <Button color={activeLink('/category/kid')}>Niños</Button>
             </Link>
           </NextLink>
         </Box>
@@ -63,7 +67,9 @@ export const Navbar = () => {
           </Link>
         </NextLink>
 
-        <Button sx={{ marginLeft: '10px' }}>Menú</Button>
+        <Button onClick={() => toggleSideMenu()} sx={{ marginLeft: '10px' }}>
+          Menú
+        </Button>
       </Toolbar>
     </AppBar>
   );

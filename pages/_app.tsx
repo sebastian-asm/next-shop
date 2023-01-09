@@ -5,6 +5,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import { lightTheme } from '../themes';
+import { UiProvider } from '../context';
+
 import '../styles/globals.css';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -16,11 +18,13 @@ export default function App({ Component, pageProps }: AppProps) {
           fetch(resource, init).then((res) => res.json()),
       }}
     >
-      <ThemeProvider theme={lightTheme}>
-        <CssBaseline>
-          <Component {...pageProps} />
-        </CssBaseline>
-      </ThemeProvider>
+      <UiProvider>
+        <ThemeProvider theme={lightTheme}>
+          <CssBaseline>
+            <Component {...pageProps} />
+          </CssBaseline>
+        </ThemeProvider>
+      </UiProvider>
     </SWRConfig>
   );
 }

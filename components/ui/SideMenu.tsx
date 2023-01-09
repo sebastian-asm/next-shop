@@ -1,3 +1,6 @@
+import { useContext } from 'react';
+import { useRouter } from 'next/router';
+
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -22,10 +25,21 @@ import MaleOutlined from '@mui/icons-material/MaleOutlined';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import VpnKeyOutlined from '@mui/icons-material/VpnKeyOutlined';
 
+import { UiContext } from '../../context';
+
 export const SideMenu = () => {
+  const { push } = useRouter();
+  const { isMenuOpen, toggleSideMenu } = useContext(UiContext);
+
+  const navigateTo = (url: string) => {
+    toggleSideMenu();
+    push(url);
+  };
+
   return (
     <Drawer
-      open={false}
+      open={isMenuOpen}
+      onClose={toggleSideMenu}
       anchor="right"
       sx={{ backdropFilter: 'blur(4px)', transition: 'all 0.3s ease-out' }}
     >
@@ -58,19 +72,30 @@ export const SideMenu = () => {
             <ListItemText primary={'Mis Pedidos'} />
           </ListItemButton>
 
-          <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
+          <ListItemButton
+            onClick={() => navigateTo('/category/men')}
+            sx={{ display: { xs: '', sm: 'none' } }}
+          >
             <ListItemIcon>
               <MaleOutlined />
             </ListItemIcon>
             <ListItemText primary={'Hombres'} />
           </ListItemButton>
-          <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
+
+          <ListItemButton
+            onClick={() => navigateTo('/category/women')}
+            sx={{ display: { xs: '', sm: 'none' } }}
+          >
             <ListItemIcon>
               <FemaleOutlined />
             </ListItemIcon>
             <ListItemText primary={'Mujeres'} />
           </ListItemButton>
-          <ListItemButton sx={{ display: { xs: '', sm: 'none' } }}>
+
+          <ListItemButton
+            onClick={() => navigateTo('/category/kid')}
+            sx={{ display: { xs: '', sm: 'none' } }}
+          >
             <ListItemIcon>
               <EscalatorWarningOutlined />
             </ListItemIcon>
