@@ -37,7 +37,11 @@ export const ProductCard: FC<Props> = ({ product }) => {
     >
       <Card>
         {/* prefetch: evitar que next haga una pre-carga en memoria de los enlaces */}
-        <NextLink href="/product/slug" legacyBehavior prefetch={false}>
+        <NextLink
+          href={`/product/${product.slug}`}
+          legacyBehavior
+          prefetch={false}
+        >
           <Link>
             <CardActionArea>
               <CardMedia

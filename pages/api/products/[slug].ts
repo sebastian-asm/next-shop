@@ -4,11 +4,7 @@ import { db } from '../../../database';
 import { IProduct } from '../../../interfaces';
 import { Product } from '../../../models';
 
-type Data = {
-  ok: boolean;
-  msg: string;
-  product?: IProduct;
-};
+type Data = { msg: string } | IProduct;
 
 export default function handler(
   req: NextApiRequest,
@@ -20,7 +16,6 @@ export default function handler(
 
     default:
       return res.status(400).json({
-        ok: false,
         msg: 'No se puede procesar la solicitud',
       });
   }
@@ -35,16 +30,11 @@ const getProduct = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
     if (!product) {
       return res.status(404).json({
-        ok: false,
         msg: 'Producto no encontrado',
       });
     }
 
-    res.json({
-      ok: true,
-      msg: 'Producto encontrado',
-      product,
-    });
+    res.json(product);
   } catch (error) {
     console.log(error);
   } finally {

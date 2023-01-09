@@ -6,7 +6,9 @@ import { useProducts } from '../../hooks';
 import { FullLoading } from '../../components/ui';
 
 export default function KidPage() {
-  const { products, error, isLoading } = useProducts('/products?gender=kid');
+  const { data: products, error, isLoading } = useProducts(
+    '/products?gender=kid'
+  );
 
   if (error) return <div>Error al obtener los productos</div>;
   if (isLoading) return <FullLoading />;

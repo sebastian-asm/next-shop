@@ -6,7 +6,7 @@ import { useProducts } from '../hooks';
 import { FullLoading } from '../components/ui';
 
 export default function Home() {
-  const { products, error, isLoading } = useProducts('/products');
+  const { data: products, error, isLoading } = useProducts('/products');
 
   if (error) return <div>Error al obtener los productos</div>;
   if (isLoading) return <FullLoading />;

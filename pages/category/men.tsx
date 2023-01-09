@@ -6,7 +6,9 @@ import { useProducts } from '../../hooks';
 import { FullLoading } from '../../components/ui';
 
 export default function MenPage() {
-  const { products, error, isLoading } = useProducts('/products?gender=men');
+  const { data: products, error, isLoading } = useProducts(
+    '/products?gender=men'
+  );
 
   if (error) return <div>Error al obtener los productos</div>;
   if (isLoading) return <FullLoading />;
