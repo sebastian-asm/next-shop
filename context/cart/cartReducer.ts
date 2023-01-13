@@ -13,6 +13,7 @@ export const cartReducer = (
     case '[Cart] - Load cart':
       return {
         ...state,
+        cart: action.payload,
       };
     case '[Cart] - Add product':
       return {

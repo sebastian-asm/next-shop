@@ -1,4 +1,6 @@
-import { useReducer } from 'react';
+import { useReducer, useEffect } from 'react';
+
+import Cookie from 'js-cookie';
 
 import { CartContext } from './CartContext';
 import { cartReducer } from './cartReducer';
@@ -18,6 +20,33 @@ const CART_INITIAL_STATE: CartState = {
 
 export const CartProvider = ({ children }: Props) => {
   const [state, dispatch] = useReducer(cartReducer, CART_INITIAL_STATE);
+
+  // obteniendo datos de las cookies
+  useEffect(() => {
+    try {
+      const cartCookie = Cookie.get('cart')
+        ? JSON.parse(Cookie.get('cart')!)
+        : [];
+
+      dispatch({
+        type: '[Cart] - Load cart',
+        payload: cartCookie,
+      });
+    } catch {
+      // en caso que la cookie haya sido manipulada o no se pueda parsear
+      dispatch({
+        type: '[Cart] - Load cart',
+        payload: [],
+      });
+    }
+  }, []);
+
+  // guardando en las cookies
+  useEffect(() => {
+    if (state.cart.length > 0) {
+      Cookie.set('cart', JSON.stringify(state.cart));
+    }
+  }, [state.cart]);
 
   const addProductToCart = (product: ICartProduct) => {
     // verificando si el product ya existe en el estado
