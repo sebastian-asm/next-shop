@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 import Box from '@mui/material/Box';
@@ -7,7 +8,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
 import { dbProducts } from '../../database';
-import { IProduct } from '../../interfaces';
+import { ICartProduct, IProduct, ISize } from '../../interfaces';
 import { ItemCounter } from '../../components/ui';
 import { ProductSlideshow, SizeSelector } from '../../components/products';
 import { ShopLayout } from '../../components/layouts';
@@ -17,6 +18,35 @@ interface Props {
 }
 
 export default function ProductPage({ product }: Props) {
+  const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
+    _id: product._id,
+    images: product.images[0],
+    price: product.price,
+    size: undefined,
+    slug: product.slug,
+    title: product.title,
+    gender: product.gender,
+    quantity: 1,
+  });
+
+  const onSelectedSize = (size: ISize) => {
+    setTempCartProduct((currentProduct) => ({
+      ...currentProduct,
+      size,
+    }));
+  };
+
+  const onUpdatedQuanity = (quantity: number) => {
+    setTempCartProduct((currentProduct) => ({
+      ...currentProduct,
+      quantity,
+    }));
+  };
+
+  const onAddProduct = (product: ICartProduct) => {
+    console.log(product);
+  };
+
   return (
     <ShopLayout title={product.title} description={product.description}>
       <Grid container spacing={3}>
@@ -34,16 +64,29 @@ export default function ProductPage({ product }: Props) {
 
             <Box sx={{ my: 2 }}>
               <Typography variant="subtitle2">Cantidad</Typography>
-              <ItemCounter />
+              <ItemCounter
+                currentValue={tempCartProduct.quantity}
+                updatedQuantity={onUpdatedQuanity}
+                maxValue={product.inStock}
+              />
+
               <SizeSelector
-                // selectedSize={product.sizes[0]}
+                selectedSize={tempCartProduct.size}
                 sizes={product.sizes}
+                onSelectedSize={onSelectedSize}
               />
             </Box>
 
             {product.inStock > 0 ? (
-              <Button color="secondary" className="circular-btn">
-                Agregar al carrito
+              <Button
+                onClick={() => onAddProduct(tempCartProduct)}
+                disabled={!tempCartProduct.size}
+                color="secondary"
+                className="circular-btn"
+              >
+                {tempCartProduct.size
+                  ? 'Agregar al carrito'
+                  : 'Seleccione una talla'}
               </Button>
             ) : (
               <Chip label="Sin stock" color="error" variant="outlined" />
