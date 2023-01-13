@@ -9,13 +9,13 @@ import RemoveCircleOutline from '@mui/icons-material/RemoveCircleOutline';
 
 interface Props {
   currentValue: number;
-  maxValue: number;
+  maxValue?: number;
   updatedQuantity: (newValue: number) => void;
 }
 
 export const ItemCounter: FC<Props> = ({
   currentValue,
-  maxValue,
+  maxValue = 5,
   updatedQuantity,
 }) => {
   const addOrRemove = (value: number) => {
