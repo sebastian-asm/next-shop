@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActionArea from '@mui/material/CardActionArea';
 import CardMedia from '@mui/material/CardMedia';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
@@ -44,12 +45,24 @@ export const ProductCard: FC<Props> = ({ product }) => {
         >
           <Link>
             <CardActionArea>
+              {product.inStock === 0 && (
+                <Chip
+                  color="primary"
+                  label="Sin stock"
+                  sx={{
+                    position: 'absolute',
+                    zIndex: 1,
+                    top: '10px',
+                    left: '10px',
+                  }}
+                />
+              )}
               <CardMedia
                 component="img"
                 image={productImage}
                 alt={product.title}
                 className="fadeIn"
-                // cuando la imagen se carga
+                // cuando la imagen se carga se muestra el texto
                 onLoad={() => setIsImageLoad(true)}
               />
             </CardActionArea>

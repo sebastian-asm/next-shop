@@ -1,8 +1,8 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 
-// import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 
@@ -41,10 +41,13 @@ export default function ProductPage({ product }: Props) {
               />
             </Box>
 
-            <Button color="secondary" className="circular-btn">
-              Agregar al carrito
-            </Button>
-            {/* <Chip label="No disponible" color="error" variant="outlined" /> */}
+            {product.inStock > 0 ? (
+              <Button color="secondary" className="circular-btn">
+                Agregar al carrito
+              </Button>
+            ) : (
+              <Chip label="Sin stock" color="error" variant="outlined" />
+            )}
 
             <Box sx={{ mt: 3 }}>
               <Typography variant="subtitle2">Descripción</Typography>
@@ -87,6 +90,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       product,
     },
+    // cada 24 horas
     revalidate: 60 * 60 * 24,
   };
 };
