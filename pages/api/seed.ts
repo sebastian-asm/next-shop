@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { db } from '../../database';
-import { initialData } from '../../database/products';
-import { Product } from '../../models';
+import { initialData } from '../../database/seed-data';
+import { Product, User } from '../../models';
 
 type Data = {
   ok: boolean;
@@ -21,8 +21,12 @@ export default async function handler(
 
   try {
     await db.connect();
-    await Product.deleteMany();
-    await Product.insertMany(initialData.products);
+    await Promise.all([
+      Product.deleteMany(),
+      User.deleteMany(),
+      Product.insertMany(initialData.products),
+      User.insertMany(initialData.users),
+    ]);
 
     res.status(201).json({
       ok: true,
