@@ -8,6 +8,8 @@ export const isValidEmail = (email: string): boolean => {
   return !!match;
 };
 
-export const isEmail = (email: string): string | null => {
-  return isValidEmail(email) ? null : 'El email no tiene un formato válido';
+export const isEmail = (email: string): string | undefined => {
+  return isValidEmail(email)
+    ? undefined
+    : 'El email no tiene un formato válido';
 };

@@ -1,7 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { compareSync } from 'bcrypt';
-
 import { db } from '../../../database';
 import { jwt } from '../../../utils';
 import { User } from '../../../models';
@@ -22,8 +20,8 @@ export default function handler(
   res: NextApiResponse<Data>
 ) {
   switch (req.method) {
-    case 'POST':
-      return loginUser(req, res);
+    case 'GET':
+      return checkJWT(req, res);
 
     default:
       return res.status(400).json({
@@ -32,30 +30,30 @@ export default function handler(
   }
 }
 
-const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  const { email = '', password = '' } = req.body;
+const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const { token = '' } = req.headers;
+  let userId = '';
 
   try {
+    userId = await jwt.isValidToken(token as string);
+
     await db.connect();
-    const user = await User.findOne({ email });
+    const user = await User.findById(userId).lean();
+    if (!user) throw new Error('No existe el usuario');
 
-    if (!user || !compareSync(password, user.password!)) {
-      throw new Error('Los datos de acceso no son válidos');
-    }
-
-    const { _id, name, role } = user;
-    const token = jwt.signToken(_id, email);
+    const { _id, email, role, name } = user;
+    const newToken = jwt.signToken(_id, email);
 
     res.json({
-      token,
+      token: newToken,
       user: {
         email,
-        name,
         role,
+        name,
       },
     });
   } catch (error) {
-    res.status(400).json({
+    res.status(404).json({
       msg: (error as Error).message,
     });
   } finally {
