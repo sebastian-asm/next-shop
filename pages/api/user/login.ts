@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { compareSync } from 'bcrypt';
 
 import { db } from '../../../database';
+import { jwt } from '../../../utils';
 import { User } from '../../../models';
 
 type Data =
@@ -42,9 +43,11 @@ const loginUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       throw new Error('Los datos de acceso no son válidos');
     }
 
-    const { name, role } = user;
+    const { _id, name, role } = user;
+    const token = jwt.signToken(_id, email);
+
     res.json({
-      token: '',
+      token,
       user: {
         email,
         name,
