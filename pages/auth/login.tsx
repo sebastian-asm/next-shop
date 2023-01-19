@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 
 import { useForm } from 'react-hook-form';
@@ -13,8 +14,8 @@ import Typography from '@mui/material/Typography';
 
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 
+import { AuthContext } from '../../context';
 import { AuthLayout } from '../../components/layouts';
-import { shopApi } from '../../api';
 import { validations } from '../../utils';
 
 type FormData = {
@@ -23,6 +24,8 @@ type FormData = {
 };
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { loginUser } = useContext(AuthContext);
   const [showError, setShowError] = useState(false);
   const {
     register,
@@ -32,12 +35,12 @@ export default function LoginPage() {
 
   const onLoginUser = async ({ email, password }: FormData) => {
     setShowError(false);
+
     try {
-      const { data } = await shopApi.post('/user/login', { email, password });
-      // const { token, user } = data;
-      console.log({ data });
+      const isValidLogin = await loginUser(email, password);
+      if (!isValidLogin) throw false;
+      router.replace('/');
     } catch (error) {
-      console.log(error);
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
     }

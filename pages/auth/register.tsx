@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 
 import { useForm } from 'react-hook-form';
@@ -13,8 +14,8 @@ import Typography from '@mui/material/Typography';
 
 import ErrorOutline from '@mui/icons-material/ErrorOutline';
 
+import { AuthContext } from '../../context';
 import { AuthLayout } from '../../components/layouts';
-import { shopApi } from '../../api';
 import { validations } from '../../utils';
 
 type FormData = {
@@ -24,23 +25,28 @@ type FormData = {
 };
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { registerUser } = useContext(AuthContext);
   const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>();
 
-  const onRegisterUser = async (formData: FormData) => {
+  const onRegisterUser = async ({ name, email, password }: FormData) => {
     setShowError(false);
-    try {
-      const { data } = await shopApi.post('/user/register', formData);
-      console.log({ data });
-    } catch (error) {
-      console.log(error);
+    const { hasError, message } = await registerUser(name, email, password);
+
+    if (hasError) {
       setShowError(true);
+      setErrorMessage(message!);
       setTimeout(() => setShowError(false), 3000);
+      return;
     }
+
+    router.replace('/');
   };
 
   return (
@@ -53,7 +59,7 @@ export default function RegisterPage() {
                 Crear nueva cuenta
               </Typography>
               <Chip
-                label="Hubo un error al crear la cuenta"
+                label={errorMessage}
                 color="error"
                 icon={<ErrorOutline />}
                 className="fadeIn"

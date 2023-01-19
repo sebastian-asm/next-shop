@@ -33,13 +33,13 @@ export const initialData: SeedData = {
     {
       name: 'Sebas',
       email: 'sebas@sebas.com',
-      password: hashSync('123', 10),
+      password: hashSync('1234', 10),
       role: 'admin',
     },
     {
       name: 'Belu',
       email: 'belu@belu.com',
-      password: hashSync('321', 10),
+      password: hashSync('4321', 10),
       role: 'client',
     },
   ],
