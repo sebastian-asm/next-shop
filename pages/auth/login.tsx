@@ -39,8 +39,11 @@ export default function LoginPage() {
     try {
       const isValidLogin = await loginUser(email, password);
       if (!isValidLogin) throw false;
-      router.replace('/');
-    } catch (error) {
+
+      // si no viene definada la query en la url siempre envia al home
+      const destination = router.query.page?.toString() || '/';
+      router.replace(destination);
+    } catch {
       setShowError(true);
       setTimeout(() => setShowError(false), 3000);
     }
@@ -112,7 +115,15 @@ export default function LoginPage() {
             </Grid>
 
             <Grid item xs={12} textAlign="end">
-              <NextLink href="/auth/register" passHref legacyBehavior>
+              <NextLink
+                href={
+                  router.query.page
+                    ? `/auth/register?page=${router.query.page}`
+                    : '/auth/register'
+                }
+                passHref
+                legacyBehavior
+              >
                 <Link underline="always">
                   ¿No tiene cuenta? Crear una nueva
                 </Link>

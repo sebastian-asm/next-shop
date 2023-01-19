@@ -46,7 +46,8 @@ export default function RegisterPage() {
       return;
     }
 
-    router.replace('/');
+    const destination = router.query.page?.toString() || '/';
+    router.replace(destination);
   };
 
   return (
@@ -124,7 +125,15 @@ export default function RegisterPage() {
             </Grid>
 
             <Grid item xs={12} textAlign="end">
-              <NextLink href="/auth/login" passHref legacyBehavior>
+              <NextLink
+                href={
+                  router.query.page
+                    ? `/auth/login?page=${router.query.page}`
+                    : '/auth/login'
+                }
+                passHref
+                legacyBehavior
+              >
                 <Link underline="always">¿Ya tiene cuenta? Iniciar sesión</Link>
               </NextLink>
             </Grid>

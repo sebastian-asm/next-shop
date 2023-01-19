@@ -25,16 +25,17 @@ import MaleOutlined from '@mui/icons-material/MaleOutlined';
 import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import VpnKeyOutlined from '@mui/icons-material/VpnKeyOutlined';
 
-import { UiContext } from '../../context';
+import { AuthContext, UiContext } from '../../context';
 
 export const SideMenu = () => {
-  const { push } = useRouter();
+  const router = useRouter();
+  const { isLoggedIn, user, logout } = useContext(AuthContext);
   const { isMenuOpen, toggleSideMenu } = useContext(UiContext);
   const [searchTerm, setSearchTerm] = useState('');
 
   const navigateTo = (url: string) => {
     toggleSideMenu();
-    push(url);
+    router.push(url);
   };
 
   const onSearchTerm = () => {
@@ -69,18 +70,22 @@ export const SideMenu = () => {
             />
           </ListItem>
 
-          <ListItemButton>
-            <ListItemIcon>
-              <AccountCircleOutlined />
-            </ListItemIcon>
-            <ListItemText primary={'Perfil'} />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <ConfirmationNumberOutlined />
-            </ListItemIcon>
-            <ListItemText primary={'Mis Pedidos'} />
-          </ListItemButton>
+          {isLoggedIn && (
+            <>
+              <ListItemButton>
+                <ListItemIcon>
+                  <AccountCircleOutlined />
+                </ListItemIcon>
+                <ListItemText primary={'Perfil'} />
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon>
+                  <ConfirmationNumberOutlined />
+                </ListItemIcon>
+                <ListItemText primary={'Mis Pedidos'} />
+              </ListItemButton>
+            </>
+          )}
 
           <ListItemButton
             onClick={() => navigateTo('/category/men')}
@@ -112,39 +117,48 @@ export const SideMenu = () => {
             <ListItemText primary={'Niños'} />
           </ListItemButton>
 
-          <ListItemButton>
-            <ListItemIcon>
-              <VpnKeyOutlined />
-            </ListItemIcon>
-            <ListItemText primary={'Ingresar'} />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <LoginOutlined />
-            </ListItemIcon>
-            <ListItemText primary={'Salir'} />
-          </ListItemButton>
+          {isLoggedIn ? (
+            <ListItemButton onClick={logout}>
+              <ListItemIcon>
+                <LoginOutlined />
+              </ListItemIcon>
+              <ListItemText primary={'Salir'} />
+            </ListItemButton>
+          ) : (
+            <ListItemButton
+              onClick={() => navigateTo(`/auth/login?page=${router.asPath}`)}
+            >
+              <ListItemIcon>
+                <VpnKeyOutlined />
+              </ListItemIcon>
+              <ListItemText primary={'Ingresar'} />
+            </ListItemButton>
+          )}
 
-          <Divider />
-          <ListSubheader>Admin Panel</ListSubheader>
-          <ListItemButton>
-            <ListItemIcon>
-              <CategoryOutlined />
-            </ListItemIcon>
-            <ListItemText primary={'Productos'} />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <ConfirmationNumberOutlined />
-            </ListItemIcon>
-            <ListItemText primary={'Ordenes'} />
-          </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-              <AdminPanelSettings />
-            </ListItemIcon>
-            <ListItemText primary={'Usuarios'} />
-          </ListItemButton>
+          {isLoggedIn && user?.role === 'admin' && (
+            <>
+              <Divider />
+              <ListSubheader>Admin Panel</ListSubheader>
+              <ListItemButton>
+                <ListItemIcon>
+                  <CategoryOutlined />
+                </ListItemIcon>
+                <ListItemText primary={'Productos'} />
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon>
+                  <ConfirmationNumberOutlined />
+                </ListItemIcon>
+                <ListItemText primary={'Ordenes'} />
+              </ListItemButton>
+              <ListItemButton>
+                <ListItemIcon>
+                  <AdminPanelSettings />
+                </ListItemIcon>
+                <ListItemText primary={'Usuarios'} />
+              </ListItemButton>
+            </>
+          )}
         </List>
       </Box>
     </Drawer>
