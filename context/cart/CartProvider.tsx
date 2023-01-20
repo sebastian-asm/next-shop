@@ -1,6 +1,6 @@
 import { useReducer, useEffect } from 'react';
 
-import Cookie from 'js-cookie';
+import Cookies from 'js-cookie';
 
 import { CartContext } from './CartContext';
 import { cartReducer } from './cartReducer';
@@ -12,6 +12,18 @@ export interface CartState {
   subTotal: number;
   tax: number;
   total: number;
+  isLoaded: boolean;
+  shippingAddress?: ShippingAddress;
+}
+
+export interface ShippingAddress {
+  firstName: string;
+  lastName: string;
+  address: string;
+  zipcode: string;
+  city: string;
+  country: string;
+  phone: string;
 }
 
 interface Props {
@@ -24,6 +36,8 @@ const CART_INITIAL_STATE: CartState = {
   subTotal: 0,
   tax: 0,
   total: 0,
+  isLoaded: false,
+  shippingAddress: undefined,
 };
 
 export const CartProvider = ({ children }: Props) => {
@@ -32,8 +46,8 @@ export const CartProvider = ({ children }: Props) => {
   // obteniendo datos de las cookies
   useEffect(() => {
     try {
-      const cartCookie = Cookie.get('cart')
-        ? JSON.parse(Cookie.get('cart')!)
+      const cartCookie = Cookies.get('cart')
+        ? JSON.parse(Cookies.get('cart')!)
         : [];
 
       dispatch({
@@ -52,7 +66,7 @@ export const CartProvider = ({ children }: Props) => {
   // guardando en las cookies
   useEffect(() => {
     if (state.cart.length > 0) {
-      Cookie.set('cart', JSON.stringify(state.cart));
+      Cookies.set('cart', JSON.stringify(state.cart));
     }
   }, [state.cart]);
 
@@ -82,6 +96,25 @@ export const CartProvider = ({ children }: Props) => {
       payload: orderSummary,
     });
   }, [state.cart]);
+
+  useEffect(() => {
+    if (Cookies.get('firstName')) {
+      const shippingAddress = {
+        firstName: Cookies.get('firstName') || '',
+        lastName: Cookies.get('lastName') || '',
+        address: Cookies.get('address') || '',
+        zipcode: Cookies.get('zipcode') || '',
+        city: Cookies.get('city') || '',
+        country: Cookies.get('country') || '',
+        phone: Cookies.get('phone') || '',
+      };
+
+      dispatch({
+        type: '[Cart] - Load address from cookies',
+        payload: shippingAddress,
+      });
+    }
+  }, []);
 
   const addProductToCart = (product: ICartProduct) => {
     // verificando si el product ya existe en el estado
@@ -131,6 +164,21 @@ export const CartProvider = ({ children }: Props) => {
     });
   };
 
+  const updateAddress = (data: ShippingAddress) => {
+    Cookies.set('firstName', data.firstName);
+    Cookies.set('lastName', data.lastName);
+    Cookies.set('address', data.address);
+    Cookies.set('zipcode', data.zipcode);
+    Cookies.set('city', data.city);
+    Cookies.set('country', data.country);
+    Cookies.set('phone', data.phone);
+
+    dispatch({
+      type: '[Cart] - Update address from cookies',
+      payload: data,
+    });
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -138,6 +186,7 @@ export const CartProvider = ({ children }: Props) => {
         addProductToCart,
         updateCartQuantity,
         removeCartProduct,
+        updateAddress,
       }}
     >
       {children}

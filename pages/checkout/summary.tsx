@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import NextLink from 'next/link';
 
 import Box from '@mui/material/Box';
@@ -9,10 +10,26 @@ import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
+import { CartContext } from '../../context';
 import { CartList, OrderSummary } from '../../components/cart';
+import { countries } from '../../utils';
 import { ShopLayout } from '../../components/layouts';
 
 export default function SummaryPage() {
+  const { shippingAddress, numberOfItems } = useContext(CartContext);
+
+  if (!shippingAddress) return;
+
+  const {
+    firstName,
+    lastName,
+    address,
+    zipcode,
+    city,
+    country,
+    phone,
+  } = shippingAddress;
+
   return (
     <ShopLayout
       title="Resumen de compra"
@@ -29,7 +46,9 @@ export default function SummaryPage() {
         <Grid item xs={12} sm={5}>
           <Card className="summary-card">
             <CardContent>
-              <Typography variant="h5">Resumen (3 items)</Typography>
+              <Typography variant="h5">
+                Resumen ({numberOfItems} {numberOfItems > 1 ? 'items' : 'item'})
+              </Typography>
               <Divider sx={{ my: 1 }} />
               <Box textAlign="end" sx={{ my: 1 }}>
                 <NextLink href="/checkout/address" legacyBehavior passHref>
@@ -38,11 +57,15 @@ export default function SummaryPage() {
               </Box>
 
               <Typography variant="subtitle1">Dirección de entrega</Typography>
-              <Typography>Sebastián Sánchez</Typography>
-              <Typography>Puente Alto</Typography>
-              <Typography>850850</Typography>
-              <Typography>Santiago, Chile</Typography>
-              <Typography>+54111223366</Typography>
+              <Typography>
+                {firstName} {lastName}
+              </Typography>
+              <Typography>{address}</Typography>
+              <Typography>{zipcode}</Typography>
+              <Typography>
+                {city}, {countries.find(({ code }) => code === country)?.name}
+              </Typography>
+              <Typography>{phone}</Typography>
 
               <Divider sx={{ my: 1 }} />
               <Box textAlign="end" sx={{ my: 1 }}>
