@@ -1,54 +1,59 @@
-import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
-import NextLink from 'next/link';
+import { useContext, useState } from 'react'
+import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
+import NextLink from 'next/link'
 
-import { useForm } from 'react-hook-form';
+import { getSession, signIn } from 'next-auth/react'
+import { useForm } from 'react-hook-form'
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import ErrorOutline from '@mui/icons-material/ErrorOutline'
 
-import { AuthContext } from '../../context';
-import { AuthLayout } from '../../components/layouts';
-import { validations } from '../../utils';
+import { AuthContext } from '../../context'
+import { AuthLayout } from '../../components/layouts'
+import { validations } from '../../utils'
 
 type FormData = {
-  email: string;
-  password: string;
-  name: string;
-};
+  email: string
+  password: string
+  name: string
+}
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const { registerUser } = useContext(AuthContext);
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const router = useRouter()
+  const { registerUser } = useContext(AuthContext)
+  const [showError, setShowError] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>()
 
   const onRegisterUser = async ({ name, email, password }: FormData) => {
-    setShowError(false);
-    const { hasError, message } = await registerUser(name, email, password);
+    setShowError(false)
+    const { hasError, message } = await registerUser(name, email, password)
 
     if (hasError) {
-      setShowError(true);
-      setErrorMessage(message!);
-      setTimeout(() => setShowError(false), 3000);
-      return;
+      setShowError(true)
+      setErrorMessage(message!)
+      setTimeout(() => setShowError(false), 3000)
+      return
     }
 
-    const destination = router.query.page?.toString() || '/';
-    router.replace(destination);
-  };
+    await signIn('credentials', { email, password })
+
+    // alternativa sin OAuth
+    // const destination = router.query.page?.toString() || '/';
+    // router.replace(destination);
+  }
 
   return (
     <AuthLayout title="Crear nueva cuenta">
@@ -141,5 +146,27 @@ export default function RegisterPage() {
         </Box>
       </form>
     </AuthLayout>
-  );
+  )
+}
+
+// en caso de existir una sesión activa, lo saca de esta pantalla
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const session = await getSession({ req })
+  const { page = '/' } = query
+
+  if (session) {
+    return {
+      redirect: {
+        destination: page as string,
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {},
+  }
 }

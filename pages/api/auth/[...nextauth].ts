@@ -29,6 +29,12 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/login',
     newUser: '/auth/register',
   },
+  // duración de la sesión
+  session: {
+    maxAge: 2592000, // 30 días
+    strategy: 'jwt',
+    updateAge: 86400, // cada día
+  },
   callbacks: {
     // primero se genera el token y luego se pasa a la session
     async jwt({ token, user, account }) {

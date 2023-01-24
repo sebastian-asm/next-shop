@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import NextLink from 'next/link'
 
 import { useForm } from 'react-hook-form'
-import { signIn, getSession } from 'next-auth/react'
+import { signIn, getSession, getProviders } from 'next-auth/react'
 
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Chip from '@mui/material/Chip'
+import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import TextField from '@mui/material/TextField'
@@ -29,11 +30,16 @@ export default function LoginPage() {
   const router = useRouter()
   // const { loginUser } = useContext(AuthContext)
   const [showError, setShowError] = useState(false)
+  const [providers, setProviders] = useState<any>({})
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>()
+
+  useEffect(() => {
+    getProviders().then((provider) => setProviders(provider))
+  }, [])
 
   const onLoginUser = async ({ email, password }: FormData) => {
     setShowError(false)
@@ -132,6 +138,25 @@ export default function LoginPage() {
                   ¿No tiene cuenta? Crear una nueva
                 </Link>
               </NextLink>
+            </Grid>
+
+            <Grid item xs={12}>
+              <Divider sx={{ my: 2 }} />
+              {Object.values(providers).map(
+                (provider: any) =>
+                  provider.id !== 'credentials' && (
+                    <Button
+                      key={provider.id}
+                      sx={{ mt: 1 }}
+                      onClick={() => signIn(provider.id)}
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                    >
+                      {provider.name}
+                    </Button>
+                  )
+              )}
             </Grid>
           </Grid>
         </Box>
