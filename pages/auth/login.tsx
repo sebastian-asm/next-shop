@@ -1,53 +1,57 @@
-import { useContext, useState } from 'react';
-import { useRouter } from 'next/router';
-import NextLink from 'next/link';
+import { useState } from 'react'
+import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
+import NextLink from 'next/link'
 
-import { useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form'
+import { signIn, getSession } from 'next-auth/react'
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Chip from '@mui/material/Chip'
+import Grid from '@mui/material/Grid'
+import Link from '@mui/material/Link'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
-import ErrorOutline from '@mui/icons-material/ErrorOutline';
+import ErrorOutline from '@mui/icons-material/ErrorOutline'
 
-import { AuthContext } from '../../context';
-import { AuthLayout } from '../../components/layouts';
-import { validations } from '../../utils';
+// import { AuthContext } from '../../context'
+import { AuthLayout } from '../../components/layouts'
+import { validations } from '../../utils'
 
 type FormData = {
-  email: string;
-  password: string;
-};
+  email: string
+  password: string
+}
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { loginUser } = useContext(AuthContext);
-  const [showError, setShowError] = useState(false);
+  const router = useRouter()
+  // const { loginUser } = useContext(AuthContext)
+  const [showError, setShowError] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>()
 
   const onLoginUser = async ({ email, password }: FormData) => {
-    setShowError(false);
+    setShowError(false)
+    await signIn('credentials', { email, password })
 
-    try {
-      const isValidLogin = await loginUser(email, password);
-      if (!isValidLogin) throw false;
+    // alternativa sin OAuth
+    // try {
+    //   const isValidLogin = await loginUser(email, password);
+    //   if (!isValidLogin) throw false;
 
-      // si no viene definada la query en la url siempre envia al home
-      const destination = router.query.page?.toString() || '/';
-      router.replace(destination);
-    } catch {
-      setShowError(true);
-      setTimeout(() => setShowError(false), 3000);
-    }
-  };
+    //   // si no viene definada la query en la url siempre envia al home
+    //   const destination = router.query.page?.toString() || '/';
+    //   router.replace(destination);
+    // } catch {
+    //   setShowError(true);
+    //   setTimeout(() => setShowError(false), 3000);
+    // }
+  }
 
   return (
     <AuthLayout title="Iniciar sesión">
@@ -133,5 +137,26 @@ export default function LoginPage() {
         </Box>
       </form>
     </AuthLayout>
-  );
+  )
+}
+
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
+  const session = await getSession({ req })
+  const { page = '/' } = query
+
+  if (session) {
+    return {
+      redirect: {
+        destination: page as string,
+        permanent: false,
+      },
+    }
+  }
+
+  return {
+    props: {},
+  }
 }

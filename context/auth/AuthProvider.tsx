@@ -1,7 +1,8 @@
 import { useReducer, useEffect } from 'react';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 
 import { isAxiosError } from 'axios';
+import { useSession, signOut } from 'next-auth/react';
 import Cookies from 'js-cookie';
 
 import { AuthContext } from './AuthContext';
@@ -24,12 +25,23 @@ const AUTH_INITIAL_STATE: AuthState = {
 };
 
 export const AuthProvider = ({ children }: Props) => {
-  const router = useRouter();
+  // const router = useRouter();
+  const { data, status } = useSession();
   const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE);
 
+  // useEffect(() => {
+  //   checkToken();
+  // }, []);
+
+  // manejando la autenticacion con next auth
   useEffect(() => {
-    checkToken();
-  }, []);
+    if (status === 'authenticated') {
+      dispatch({
+        type: '[Auth] - Login',
+        payload: data.user as IUser,
+      });
+    }
+  }, [status, data]);
 
   const loginUser = async (
     email: string,
@@ -87,27 +99,37 @@ export const AuthProvider = ({ children }: Props) => {
     }
   };
 
-  const checkToken = async () => {
-    if (!Cookies.get('token')) return;
+  // const checkToken = async () => {
+  //   if (!Cookies.get('token')) return;
 
-    try {
-      const { data } = await shopApi.get('/user/validate-token');
-      const { token, user } = data;
-      Cookies.set('token', token);
+  //   try {
+  //     const { data } = await shopApi.get('/user/validate-token');
+  //     const { token, user } = data;
+  //     Cookies.set('token', token);
 
-      dispatch({
-        type: '[Auth] - Login',
-        payload: user,
-      });
-    } catch {
-      Cookies.remove('token');
-    }
-  };
+  //     dispatch({
+  //       type: '[Auth] - Login',
+  //       payload: user,
+  //     });
+  //   } catch {
+  //     Cookies.remove('token');
+  //   }
+  // };
 
   const logout = () => {
-    Cookies.remove('token');
     Cookies.remove('cart');
-    router.reload();
+    Cookies.remove('firstName');
+    Cookies.remove('lastName');
+    Cookies.remove('address');
+    Cookies.remove('zipcode');
+    Cookies.remove('city');
+    Cookies.remove('country');
+    Cookies.remove('phone');
+
+    signOut();
+
+    // Cookies.remove('token');
+    // router.reload();
   };
 
   return (
